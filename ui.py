@@ -5,6 +5,7 @@ import threading
 import random
 
 from tkinter.constants import DISABLED, NORMAL
+from string import ascii_lowercase, ascii_uppercase
 from words import *
 
 NSEW = (tk.N, tk.S, tk.E, tk.W)
@@ -20,7 +21,19 @@ class TextTwistUI:
         self.root.rowconfigure(0, weight=1)
         self.create_content_pane(self.root)
 
+        self.add_key_bindings_to_root()
+
+
+    def add_key_bindings_to_root(self):
+        """
+        Bind keys for gameplay to root window.
+        """
         self.root.bind_all("<space>", self.shuffle_letters)
+
+        for letter in ascii_lowercase:
+            self.root.bind_all(letter, self.process_typed_letter)
+
+        self.root.bind_all("<BackSpace>", self.process_backspace)
 
 
     def create_content_pane(self, parent):
@@ -92,6 +105,9 @@ class TextTwistUI:
 
 
     def add_text_entry_boxes(self, parent):
+        """
+        Add boxes which will display characters that the user types.
+        """
         self.entry_labels = []
         for i in range(6):
             label = tk.Label(parent, text="_",
@@ -106,6 +122,9 @@ class TextTwistUI:
 
 
     def add_letter_display_frame(self, parent, width, height, padding):
+        """
+        Add the frame which will show the available letters for the puzzle.
+        """
         letter_display_frame = tk.Frame(parent, width=width, height=height)
         letter_display_frame.grid(row=1, column=0, sticky=NSEW, **padding)
 
@@ -113,6 +132,10 @@ class TextTwistUI:
 
 
     def add_letter_boxes(self, parent):
+        """
+        Add the individual labels that will hold each available letter
+        for the puzzle.
+        """
         self.letter_labels = []
 
         for i in range(6):
@@ -127,6 +150,9 @@ class TextTwistUI:
 
 
     def set_letters(self, letters=[" "]*6):
+        """
+        Set the letters in the letter display labels.
+        """
         self.letters = letters
         random.shuffle(self.letters)
         for i, c in enumerate(self.letters):
@@ -134,6 +160,9 @@ class TextTwistUI:
 
 
     def shuffle_letters(self, *args):
+        """
+        Shuffle the puzzle letters in the UI.
+        """
         random.shuffle(self.letter_labels)
         for i, label in enumerate(self.letter_labels):
             label.grid(row=0, column=i)
@@ -182,16 +211,66 @@ class TextTwistUI:
             command=lambda : self.reset_game(reset_clock))
         self.reset_btn.grid(row=2, column=0)
 
+    
+    def process_typed_letter(self, event):
+        """
+        Update the letter display and text entry labels when a
+        letter is typed.
+        """
+        typed_letter = event.char.upper()
+        if typed_letter in ascii_uppercase:
+            for letter_label in self.letter_labels:
+                if typed_letter == letter_label['text']:
+                    self.append_letter_to_text_entry(typed_letter)
+                    letter_label['text'] = ' '
+                    break
+
+
+    def append_letter_to_text_entry(self, typed_letter):
+        for entry_label in self.entry_labels:
+            if entry_label['text'] == '_':
+                entry_label['text'] = typed_letter
+                break
+
+
+    def process_backspace(self, event):
+        """
+        Find last non-empty letter entry. Move that letter from entry
+        area to display area.
+        """
+        for entry_label in reversed(self.entry_labels):
+            if entry_label['text'] != '_':
+                self.move_letter_from_entry_to_display(entry_label)
+                break
+
+
+    def move_letter_from_entry_to_display(self, entry_label):
+        """
+        Find first available/empty letter display label, and move
+        the text of 'entry_label' to the display.
+        """
+        for display_label in self.letter_labels:
+            if display_label['text'] == ' ':
+                display_label['text'] = entry_label['text']
+                entry_label['text'] = '_'
+                break
+
 
     def start_game(self, run_clock):
         self.start_btn['state'] = DISABLED
         self.set_letters(list(get_six_letter_word().upper()))
         run_clock()
 
+
     def reset_game(self, reset_clock):
         self.start_btn['state'] = NORMAL
         self.set_letters()
         reset_clock()
+
+
+    def add_game_function_to_ui(self, name, func):
+        self.functions[name] = func
+
 
     def start(self):
         self.root.mainloop()
