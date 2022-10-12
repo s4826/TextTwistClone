@@ -7,6 +7,8 @@ class Clock():
 
     def __init__(self):
         self.string_var = StringVar()
+        self.seconds = 120
+        self.set_string_var(self.seconds)
         self.exit = Event()
 
     def set_string_var(self, seconds):

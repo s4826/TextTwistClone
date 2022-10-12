@@ -1,5 +1,3 @@
-import re
-import copy
 import random
 import sys
 

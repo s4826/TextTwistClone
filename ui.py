@@ -21,10 +21,10 @@ class TextTwistUI:
         self.root.rowconfigure(0, weight=1)
         self.create_content_pane(self.root)
 
-        self.add_key_bindings_to_root()
+        self.add_key_bindings_to_root_window()
 
 
-    def add_key_bindings_to_root(self):
+    def add_key_bindings_to_root_window(self):
         """
         Bind keys for gameplay to root window.
         """
@@ -34,6 +34,7 @@ class TextTwistUI:
             self.root.bind_all(letter, self.process_typed_letter)
 
         self.root.bind_all("<BackSpace>", self.process_backspace)
+        self.root.bind_all("<Return>", self.process_enter)
 
 
     def create_content_pane(self, parent):
@@ -110,15 +111,21 @@ class TextTwistUI:
         """
         self.entry_labels = []
         for i in range(6):
-            label = tk.Label(parent, text="_",
-                    font=TEXT_ENTRY_FONT, bg="white")
+            label = tk.Label(parent, font=TEXT_ENTRY_FONT, bg="white")
             label.grid(row=0, column=i)
             self.entry_labels.append(label)
+
+        self.set_entry_label_text()
 
         parent.rowconfigure(0, weight=1)
         parent.grid_propagate(False)
         for i in range(parent.grid_size()[0]):
             parent.columnconfigure(i, weight=1)
+
+
+    def set_entry_label_text(self, text="_"):
+        for entry_label in self.entry_labels:
+            entry_label['text'] = text
 
 
     def add_letter_display_frame(self, parent, width, height, padding):
@@ -149,7 +156,17 @@ class TextTwistUI:
             parent.columnconfigure(i, weight=1)
 
 
-    def set_letters(self, letters=[" "]*6):
+    def clear_entry_and_display_letters(self):
+        self.set_entry_label_text() 
+        self.set_display_letters()
+
+
+    def reset_entry_and_display_letters(self):
+        self.set_entry_label_text()
+        self.set_display_letters(self.game.get_letters())
+
+
+    def set_display_letters(self, letters=[" "]*6):
         """
         Set the letters in the letter display labels.
         """
@@ -183,12 +200,11 @@ class TextTwistUI:
         self.clock_frame.columnconfigure(0, weight=1)
 
     
-    def add_clock(self, clock, clock_run_callback, clock_reset_callback):
-        self.add_clock_to_frame(self.clock_frame,
-                clock, clock_run_callback, clock_reset_callback)
+    def add_clock(self, clock):
+        self.add_clock_to_frame(self.clock_frame, clock)
 
 
-    def add_clock_to_frame(self, parent, clock, run_clock, reset_clock):
+    def add_clock_to_frame(self, parent, clock):
         """
         Add a clock to the parent frame.
         """
@@ -196,19 +212,17 @@ class TextTwistUI:
                 font=('bitstream charter', 36), anchor="center")
         self.clock_label.grid(row=0, column=0)
 
-        self.add_clock_frame_buttons(parent, run_clock, reset_clock)
+        self.add_clock_frame_buttons(parent)
 
 
-    def add_clock_frame_buttons(self, parent, run_clock, reset_clock):
+    def add_clock_frame_buttons(self, parent):
         """
         Add start and reset buttons to the clock frame specified by
         'parent.'
         """
-        self.start_btn = tk.Button(parent, text="Start",
-                command=lambda : self.start_game(run_clock))
+        self.start_btn = tk.Button(parent, text="Start", command=self.start_game)
         self.start_btn.grid(row=1, column=0)
-        self.reset_btn = tk.Button(parent, text="Reset",
-            command=lambda : self.reset_game(reset_clock))
+        self.reset_btn = tk.Button(parent, text="Reset", command=self.reset_game)
         self.reset_btn.grid(row=2, column=0)
 
     
@@ -231,6 +245,18 @@ class TextTwistUI:
             if entry_label['text'] == '_':
                 entry_label['text'] = typed_letter
                 break
+
+
+    def process_enter(self, event):
+        word = "".join(label['text'] for label in self.entry_labels if
+                label['text'] != "_")
+        if self.game.validate_word_entry(word):
+            self.accept_word()
+
+
+    def accept_word(self):
+        #self.add_word_to_answer_display(word)
+        self.reset_entry_and_display_letters()
 
 
     def process_backspace(self, event):
@@ -256,20 +282,24 @@ class TextTwistUI:
                 break
 
 
-    def start_game(self, run_clock):
+    def start_game(self):
         self.start_btn['state'] = DISABLED
-        self.set_letters(list(get_six_letter_word().upper()))
-        run_clock()
+        self.game.start_game()
+        self.set_display_letters(self.game.get_letters())
 
 
-    def reset_game(self, reset_clock):
+    def reset_game(self):
         self.start_btn['state'] = NORMAL
-        self.set_letters()
-        reset_clock()
+        self.game.reset_game()
+        self.clear_entry_and_display_letters()
 
 
-    def add_game_function_to_ui(self, name, func):
-        self.functions[name] = func
+    def add_game_object_to_ui(self, game):
+        """
+        Pass an instance of TextTwistGame to the UI class. Game logic
+        and events can be accessed through the TextTwistGame object.
+        """
+        self.game = game
 
 
     def start(self):
