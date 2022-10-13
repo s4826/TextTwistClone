@@ -38,7 +38,3 @@ class Clock():
         self.seconds = 120
         self.set_string_var(self.seconds)
         self.exit.set()
-
-
-    def add_queue(self, q):
-        self.q = q
