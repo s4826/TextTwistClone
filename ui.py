@@ -14,6 +14,7 @@ WINDOW_WIDTH = 600
 TEXT_ENTRY_FONT = ("Times", 48)
 SOLUTION_WORD_FONT = ("Times", 24)
 SOLUTION_GRID_HEIGHT = 7
+GAME_STATUS_FONT = ("Times", 24)
 
 class TextTwistUI:
 
@@ -90,13 +91,16 @@ class TextTwistUI:
         text_frame.grid(row=0, column=0, sticky=NSEW)
 
         padding = {"padx":5, "pady":5}
-        self.add_text_entry_frame(text_frame, text_frame['width'],
-                text_frame['height']/2, padding)
-        self.add_letter_display_frame(text_frame, text_frame['width'],
-                text_frame['height']/2, padding)
 
-        text_frame.rowconfigure(0, weight=1)
-        text_frame.rowconfigure(1, weight=1)
+        child_frame_args = (text_frame, text_frame['width'],
+                text_frame['height']/3)
+        self.add_text_entry_frame(*child_frame_args, padding)
+        self.add_letter_display_frame(*child_frame_args, padding)
+        self.add_game_status_frame(*child_frame_args)
+
+        text_frame.rowconfigure(0, weight=1) # text entry area
+        text_frame.rowconfigure(1, weight=1) # letter display area
+        text_frame.rowconfigure(2, weight=1) # game status area
         text_frame.columnconfigure(0, weight=1)
 
 
@@ -156,6 +160,32 @@ class TextTwistUI:
         parent.grid_propagate(False)
         for i in range(parent.grid_size()[0]):
             parent.columnconfigure(i, weight=1)
+
+
+    def add_game_status_frame(self, parent, width, height):
+        game_status_frame = tk.Frame(parent,
+                width=width, height=height)
+        game_status_frame.grid(row=2, column=0, sticky=NSEW)
+        
+        self.add_game_status_labels(game_status_frame)
+
+        
+    def add_game_status_labels(self, parent):
+        self.level_status_label = tk.Label(parent,
+                font=GAME_STATUS_FONT)
+        self.level_status_label.grid(row=0, column=0, sticky=NSEW)
+        self.score_label = tk.Label(parent,
+                font=GAME_STATUS_FONT)
+        self.score_label.grid(row=0, column=1, sticky=NSEW)
+
+        parent.rowconfigure(0, weight=1)
+        parent.columnconfigure(0, weight=2)
+        parent.columnconfigure(1, weight=1)
+
+    
+    def clear_game_status_labels(self):
+        self.score_label['text'] = ""
+        self.level_status_label['text'] = ""
 
 
     def clear_entry_and_display_letters(self):
@@ -303,6 +333,7 @@ class TextTwistUI:
         if self.game.word_entry_is_valid(word):
             self.add_word_to_solution_area(word)
             self.reset_entry_and_display_letters()
+            self.update_game_status()
 
 
     def add_word_to_solution_area(self, word, color="black"):
@@ -313,6 +344,21 @@ class TextTwistUI:
                 solution_label['fg'] = color
                 break
 
+
+    def update_game_status(self):
+        self.update_score_label()
+        self.update_level_status_label()
+
+
+    def update_score_label(self):
+        score = self.game.get_score()
+        self.score_label['text'] = f"Score: {score}"
+
+
+    def update_level_status_label(self):
+        if self.game.is_level_passed():
+            self.level_status_label['text'] = "Level Passed!"
+        
 
     def process_backspace(self, event):
         """
@@ -343,6 +389,7 @@ class TextTwistUI:
         self.game.start_game()
         self.set_display_letters(self.game.get_letters())
         self.set_solution_word_labels(self.top_pane)
+        self.update_game_status()
 
 
     def reset_game(self):
@@ -350,6 +397,7 @@ class TextTwistUI:
         self.game.reset_game()
         self.clear_entry_and_display_letters()
         self.clear_solution_word_labels()
+        self.clear_game_status_labels()
 
 
     def clock_reached_zero(self):

@@ -5,19 +5,31 @@ from tkinter.constants import DISABLED, NORMAL
 from ui import TextTwistUI
 from clock import Clock
 from words import *
-
+from gamestate import GameState
 
 class TextTwistGame:
 
     def __init__(self):
-        self.__clock = Clock(5)
+        self.__clock = Clock(50)
         self.__clock.add_observer(self)
 
         self.__letters = []
         self.__wordlist = set()
         self.__solution_words = set()
 
+        self.__score = 0
+        self.__level_passed = False
+
         self.__ui_callbacks = {}
+
+    def get_score(self):
+        return self.__score
+
+    def is_level_passed(self):
+        if self.__level_passed:
+            return True
+        else:
+            return False
 
     def get_letters(self):
         return self.__letters
@@ -28,6 +40,7 @@ class TextTwistGame:
     def word_entry_is_valid(self, word):
         if word not in self.__solution_words and word in self.__wordlist:
             self.__solution_words.add(word)
+            self.__score += len(word)
             if len(word) == 6:
                 self.__level_passed = True
             return True
@@ -65,6 +78,8 @@ class TextTwistGame:
     def reset_game(self):
         self.__letters = []
         self.__wordlist = set()
+        self.__score = 0
+        self.__level_passed = False
         self.reset_clock()
 
 
