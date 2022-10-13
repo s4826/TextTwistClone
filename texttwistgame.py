@@ -11,10 +11,14 @@ from words import *
 class TextTwistGame:
 
     def __init__(self):
-        self.clock = Clock(15)
+        self.clock = Clock(5)
+        self.clock.add_observer(self)
+
         self.letters = []
         self.wordlist = set()
         self.solution_words = set()
+
+        self.ui_callbacks = {}
 
     def get_letters(self):
         return self.letters
@@ -34,6 +38,9 @@ class TextTwistGame:
     def get_solution_words(self):
         return self.solution_words
 
+    def get_missing_solution_words(self):
+        return self.wordlist.difference(self.solution_words)
+
     def get_clock(self):
         return self.clock
 
@@ -44,8 +51,12 @@ class TextTwistGame:
     def reset_clock(self):
         self.clock.reset()
 
-    def process_clock_reached_zero(self):
-        pass
+    def notify_clock_reached_zero(self):
+        print("entered")
+        self.ui_callbacks["clock_reached_zero"]() 
+
+    def add_ui_callback(self, name, func):
+        self.ui_callbacks[name] = func
 
     def start_game(self):
         self.level_passed = False
