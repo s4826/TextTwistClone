@@ -10,62 +10,61 @@ from words import *
 class TextTwistGame:
 
     def __init__(self):
-        self.clock = Clock(5)
-        self.clock.add_observer(self)
+        self.__clock = Clock(5)
+        self.__clock.add_observer(self)
 
-        self.letters = []
-        self.wordlist = set()
-        self.solution_words = set()
+        self.__letters = []
+        self.__wordlist = set()
+        self.__solution_words = set()
 
-        self.ui_callbacks = {}
+        self.__ui_callbacks = {}
 
     def get_letters(self):
-        return self.letters
+        return self.__letters
 
     def get_wordlist(self):
-        return self.wordlist
+        return self.__wordlist
 
     def word_entry_is_valid(self, word):
-        if word not in self.solution_words and word in self.wordlist:
-            self.solution_words.add(word)
+        if word not in self.__solution_words and word in self.__wordlist:
+            self.__solution_words.add(word)
             if len(word) == 6:
-                self.level_passed = True
+                self.__level_passed = True
             return True
         else:
             return False
 
     def get_solution_words(self):
-        return self.solution_words
+        return self.__solution_words
 
     def get_missing_solution_words(self):
-        return self.wordlist.difference(self.solution_words)
+        return self.__wordlist.difference(self.__solution_words)
 
     def get_clock(self):
-        return self.clock
+        return self.__clock
 
     def run_clock(self):
-        clock_thread = threading.Thread(target=self.clock.run)
+        clock_thread = threading.Thread(target=self.__clock.run)
         clock_thread.start()
 
     def reset_clock(self):
-        self.clock.reset()
+        self.__clock.reset()
 
     def notify_clock_reached_zero(self):
-        print("entered")
-        self.ui_callbacks["clock_reached_zero"]() 
+        self.__ui_callbacks["clock_reached_zero"]() 
 
     def add_ui_callback(self, name, func):
-        self.ui_callbacks[name] = func
+        self.__ui_callbacks[name] = func
 
     def start_game(self):
-        self.level_passed = False
-        self.letters = list(get_six_letter_word())
-        self.wordlist = set(get_words_from_base_word("".join(self.letters)))
+        self.__level_passed = False
+        self.__letters = list(get_six_letter_word())
+        self.__wordlist = set(get_words_from_base_word("".join(self.__letters)))
         self.run_clock()
 
     def reset_game(self):
-        self.letters = []
-        self.wordlist = set()
+        self.__letters = []
+        self.__wordlist = set()
         self.reset_clock()
 
 
