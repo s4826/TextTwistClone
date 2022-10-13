@@ -12,6 +12,8 @@ NSEW = (tk.N, tk.S, tk.E, tk.W)
 WINDOW_HEIGHT = 500
 WINDOW_WIDTH = 600
 TEXT_ENTRY_FONT = ("Times", 48)
+SOLUTION_WORD_FONT = ("Times", 24)
+SOLUTION_GRID_HEIGHT = 7
 
 class TextTwistUI:
 
@@ -34,7 +36,7 @@ class TextTwistUI:
             self.root.bind_all(letter, self.process_typed_letter)
 
         self.root.bind_all("<BackSpace>", self.process_backspace)
-        self.root.bind_all("<Return>", self.process_enter)
+        self.root.bind_all("<Return>", self.validate_word)
 
 
     def create_content_pane(self, parent):
@@ -42,21 +44,21 @@ class TextTwistUI:
         Create the main frame that will hold all content for the UI
         """
         content = tk.Frame(parent)
-        top_pane = tk.Frame(content, relief="groove",
+        self.top_pane = tk.Frame(content, relief="groove",
                 borderwidth=2, width=WINDOW_WIDTH, height=WINDOW_HEIGHT/2)
 
-        bottom_pane = tk.Frame(content, relief="groove",
+        self.bottom_pane = tk.Frame(content, relief="groove",
                 borderwidth=2, width=WINDOW_WIDTH, height=WINDOW_HEIGHT/2)
         content.grid(column=0, row=0, ipadx=5, ipady=5,
                 sticky=NSEW)
-        top_pane.grid(row=0, column=0, sticky=NSEW)
-        bottom_pane.grid(row=1, column=0, sticky=NSEW)
+        self.top_pane.grid(row=0, column=0, sticky=NSEW)
+        self.bottom_pane.grid(row=1, column=0, sticky=NSEW)
 
         content.rowconfigure(0, weight=1)
         content.rowconfigure(1, weight=1)
         content.columnconfigure(0, weight=1)
 
-        self.create_bottom_pane_frames(bottom_pane)
+        self.create_bottom_pane_frames(self.bottom_pane)
 
 
     def create_bottom_pane_frames(self, parent):
@@ -102,10 +104,10 @@ class TextTwistUI:
         text_entry_frame = tk.Frame(parent, width=width, height=height)
         text_entry_frame.grid(row=0, column=0, sticky=NSEW, **padding)
 
-        self.add_text_entry_boxes(text_entry_frame)
+        self.add_text_entry_labels(text_entry_frame)
 
 
-    def add_text_entry_boxes(self, parent):
+    def add_text_entry_labels(self, parent):
         """
         Add boxes which will display characters that the user types.
         """
@@ -135,10 +137,10 @@ class TextTwistUI:
         letter_display_frame = tk.Frame(parent, width=width, height=height)
         letter_display_frame.grid(row=1, column=0, sticky=NSEW, **padding)
 
-        self.add_letter_boxes(letter_display_frame)
+        self.add_letter_labels(letter_display_frame)
 
 
-    def add_letter_boxes(self, parent):
+    def add_letter_labels(self, parent):
         """
         Add the individual labels that will hold each available letter
         for the puzzle.
@@ -157,11 +159,18 @@ class TextTwistUI:
 
 
     def clear_entry_and_display_letters(self):
+        """
+        Reset the text entry and letter display areas to all blanks.
+        """
         self.set_entry_label_text() 
         self.set_display_letters()
 
 
     def reset_entry_and_display_letters(self):
+        """
+        Move all letters from text entry area to display area,
+        leaving text entry area blank.
+        """
         self.set_entry_label_text()
         self.set_display_letters(self.game.get_letters())
 
@@ -174,6 +183,38 @@ class TextTwistUI:
         random.shuffle(self.letters)
         for i, c in enumerate(self.letters):
             self.letter_labels[i].config(text=c)
+
+
+    def set_solution_word_labels(self, parent):
+        """
+        Populate top pane with text labels corresponding to each
+        word in the solution set.
+        """
+        self.solution_labels = []
+        wordlist = self.game.get_wordlist()
+
+        grid_width = set_grid_width(len(wordlist))
+        grid_height = (len(wordlist) + grid_width - 1) // grid_width
+
+        for i, word in enumerate(sorted(wordlist, key=len)):
+            label = tk.Label(parent, font=SOLUTION_WORD_FONT,
+                text="_"*len(word), bg="white")
+            label.grid(row=(i//grid_width), column=(i%grid_width), pady=3)
+            self.solution_labels.append(label)
+
+        for i in range(grid_width):
+            parent.columnconfigure(i, weight=1)
+        for j in range(grid_height):
+            parent.rowconfigure(j, weight=1)
+
+
+    def clear_solution_word_labels(self):
+        """
+        Clear all labels from the top pane. Used to reset the state
+        and appearance of the solution/entered word area to empty.
+        """
+        for widget in self.top_pane.winfo_children():
+            widget.destroy()
 
 
     def shuffle_letters(self, *args):
@@ -220,9 +261,13 @@ class TextTwistUI:
         Add start and reset buttons to the clock frame specified by
         'parent.'
         """
-        self.start_btn = tk.Button(parent, text="Start", command=self.start_game)
+        self.start_btn = tk.Button(parent, text="Start",
+                command=self.start_game,
+                takefocus=0)
         self.start_btn.grid(row=1, column=0)
-        self.reset_btn = tk.Button(parent, text="Reset", command=self.reset_game)
+        self.reset_btn = tk.Button(parent, text="Reset",
+                command=self.reset_game,
+                takefocus=0)
         self.reset_btn.grid(row=2, column=0)
 
     
@@ -241,22 +286,31 @@ class TextTwistUI:
 
 
     def append_letter_to_text_entry(self, typed_letter):
+        """
+        Helper method for processing typed letters. Find first
+        empty/available label in the text entry area, and populate
+        it with 'typed_letter.'
+        """
         for entry_label in self.entry_labels:
             if entry_label['text'] == '_':
                 entry_label['text'] = typed_letter
                 break
 
 
-    def process_enter(self, event):
+    def validate_word(self, event):
         word = "".join(label['text'] for label in self.entry_labels if
                 label['text'] != "_")
-        if self.game.validate_word_entry(word):
-            self.accept_word()
+        if self.game.word_entry_is_valid(word):
+            self.add_word_to_solution_area(word)
+            self.reset_entry_and_display_letters()
 
 
-    def accept_word(self):
-        #self.add_word_to_answer_display(word)
-        self.reset_entry_and_display_letters()
+    def add_word_to_solution_area(self, word):
+        for solution_label in self.solution_labels:
+            if "_" in solution_label['text'] and \
+                len(solution_label['text']) == len(word):
+                solution_label['text'] = word
+                break
 
 
     def process_backspace(self, event):
@@ -272,8 +326,9 @@ class TextTwistUI:
 
     def move_letter_from_entry_to_display(self, entry_label):
         """
-        Find first available/empty letter display label, and move
-        the text of 'entry_label' to the display.
+        Helper method for processing <BackSpace>. Find first
+        available/empty letter display label, and move
+        the text of 'entry_label' to that letter display label.
         """
         for display_label in self.letter_labels:
             if display_label['text'] == ' ':
@@ -286,25 +341,33 @@ class TextTwistUI:
         self.start_btn['state'] = DISABLED
         self.game.start_game()
         self.set_display_letters(self.game.get_letters())
+        self.set_solution_word_labels(self.top_pane)
 
 
     def reset_game(self):
         self.start_btn['state'] = NORMAL
         self.game.reset_game()
         self.clear_entry_and_display_letters()
+        self.clear_solution_word_labels()
 
 
     def add_game_object_to_ui(self, game):
         """
         Pass an instance of TextTwistGame to the UI class. Game logic
-        and events can be accessed through the TextTwistGame object.
+        and events can be processed via the TextTwistGame object.
         """
         self.game = game
+        self.add_clock(game.get_clock())
 
 
-    def start(self):
+    def start_mainloop(self):
         self.root.mainloop()
 
 
+def set_grid_width(num_words):
+    width = (num_words + SOLUTION_GRID_HEIGHT - 1) // SOLUTION_GRID_HEIGHT
+    return max(width, 4)
+
+
 if __name__ == '__main__':
-    ui = TextTwistUI()
+    pass
