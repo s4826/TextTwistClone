@@ -11,7 +11,7 @@ from words import *
 class TextTwistGame:
 
     def __init__(self):
-        self.clock = Clock()
+        self.clock = Clock(15)
         self.letters = []
         self.wordlist = set()
         self.solution_words = set()

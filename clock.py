@@ -5,9 +5,10 @@ from time import sleep
 
 class Clock():
 
-    def __init__(self):
+    def __init__(self, default_time=120):
         self.string_var = StringVar()
-        self.seconds = 120
+        self.default_time = default_time
+        self.seconds = default_time 
         self.set_string_var(self.seconds)
         self.exit = Event()
 
@@ -35,7 +36,7 @@ class Clock():
                 break
 
     def reset(self):
-        self.seconds = 120
+        self.seconds = self.default_time 
         self.set_string_var(self.seconds)
         self.exit.set()
 
