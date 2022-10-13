@@ -1,24 +1,18 @@
 import threading
 
-from tkinter.constants import DISABLED, NORMAL
-
 from ui import TextTwistUI
 from clock import Clock
 from words import *
 
+GAME_TIME = 120
+
 class TextTwistGame:
 
     def __init__(self):
-        self.__clock = Clock(120)
+        self.__clock = Clock(GAME_TIME)
         self.__clock.add_observer(self)
 
-        self.__letters = []
-        self.__wordlist = set()
-        self.__solution_words = set()
-
-        self.__score = 0
-        self.__level_passed = False
-
+        self.reset_game()
         self.__ui_callbacks = {}
 
     def get_score(self):
@@ -70,6 +64,7 @@ class TextTwistGame:
 
     def start_game(self):
         self.__level_passed = False
+        self.__solution_words = set()
         self.__letters = list(get_six_letter_word())
         self.__wordlist = set(get_words_from_base_word("".join(self.__letters)))
         self.run_clock()
@@ -77,14 +72,20 @@ class TextTwistGame:
     def reset_game(self):
         self.__letters = []
         self.__wordlist = set()
+        self.__solution_words = set()
         self.__score = 0
         self.__level_passed = False
         self.reset_clock()
 
 
-if __name__ == "__main__":
+def run_game_instance():
     ui = TextTwistUI()
     game = TextTwistGame()
 
     ui.add_game_object_to_ui(game)
     ui.start_mainloop()
+
+
+if __name__ == "__main__":
+    run_game_instance()
+
