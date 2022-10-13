@@ -44,6 +44,9 @@ class TextTwistGame:
     def reset_clock(self):
         self.clock.reset()
 
+    def process_clock_reached_zero(self):
+        pass
+
     def start_game(self):
         self.level_passed = False
         self.letters = list(get_six_letter_word())
