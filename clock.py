@@ -5,10 +5,14 @@ from time import sleep
 
 class Clock():
 
-    def __init__(self):
+    def __init__(self, default_time=120):
         self.string_var = StringVar()
-        self.seconds = 120
+        self.default_time = default_time
+        self.seconds = default_time 
         self.set_string_var(self.seconds)
+
+        self.observers = set()
+
         self.exit = Event()
 
     def set_string_var(self, seconds):
@@ -24,17 +28,27 @@ class Clock():
         return "{}:{}".format(seconds//60, (str)(seconds%60).zfill(2))
 
     def run(self):
-        if self.exit.is_set():
-            self.exit.clear()
+        self.reset()
+        self.exit.clear()
         while True:
             self.seconds -= 1
             self.set_string_var(self.seconds)
+            if self.seconds == 0:
+                self.process_clock_reached_zero()
+                break
             sleep(1)
             if self.exit.is_set():
                 self.exit.clear()
                 break
 
+    def process_clock_reached_zero(self):
+        for observer in self.observers:
+            observer.notify_clock_reached_zero()
+
+    def add_observer(self, observer):
+        self.observers.add(observer)
+
     def reset(self):
-        self.seconds = 120
+        self.seconds = self.default_time 
         self.set_string_var(self.seconds)
         self.exit.set()

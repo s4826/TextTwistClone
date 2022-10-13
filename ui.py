@@ -305,11 +305,12 @@ class TextTwistUI:
             self.reset_entry_and_display_letters()
 
 
-    def add_word_to_solution_area(self, word):
+    def add_word_to_solution_area(self, word, color="black"):
         for solution_label in self.solution_labels:
             if "_" in solution_label['text'] and \
                 len(solution_label['text']) == len(word):
                 solution_label['text'] = word
+                solution_label['fg'] = color
                 break
 
 
@@ -351,6 +352,16 @@ class TextTwistUI:
         self.clear_solution_word_labels()
 
 
+    def clock_reached_zero(self):
+        self.display_missing_words() 
+
+
+    def display_missing_words(self):
+        missing_words = self.game.get_missing_solution_words()
+        for word in sorted(missing_words, key=len):
+            self.add_word_to_solution_area(word, color="red")
+
+
     def add_game_object_to_ui(self, game):
         """
         Pass an instance of TextTwistGame to the UI class. Game logic
@@ -358,6 +369,8 @@ class TextTwistUI:
         """
         self.game = game
         self.add_clock(game.get_clock())
+        self.game.add_ui_callback(
+                "clock_reached_zero", self.clock_reached_zero)
 
 
     def start_mainloop(self):
