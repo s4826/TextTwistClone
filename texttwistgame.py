@@ -1,5 +1,4 @@
 import threading
-import random
 
 from tkinter.constants import DISABLED, NORMAL
 
