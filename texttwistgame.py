@@ -5,12 +5,11 @@ from tkinter.constants import DISABLED, NORMAL
 from ui import TextTwistUI
 from clock import Clock
 from words import *
-from gamestate import GameState
 
 class TextTwistGame:
 
     def __init__(self):
-        self.__clock = Clock(50)
+        self.__clock = Clock(120)
         self.__clock.add_observer(self)
 
         self.__letters = []

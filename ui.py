@@ -220,6 +220,8 @@ class TextTwistUI:
         Populate top pane with text labels corresponding to each
         word in the solution set.
         """
+        self.clear_solution_word_labels()
+
         self.solution_labels = []
         wordlist = self.game.get_wordlist()
 
@@ -358,6 +360,8 @@ class TextTwistUI:
     def update_level_status_label(self):
         if self.game.is_level_passed():
             self.level_status_label['text'] = "Level Passed!"
+        else:
+            self.level_status_label['text'] = ""
         
 
     def process_backspace(self, event):
@@ -384,24 +388,11 @@ class TextTwistUI:
                 break
 
 
-    def start_game(self):
-        self.start_btn['state'] = DISABLED
-        self.game.start_game()
-        self.set_display_letters(self.game.get_letters())
-        self.set_solution_word_labels(self.top_pane)
-        self.update_game_status()
-
-
-    def reset_game(self):
-        self.start_btn['state'] = NORMAL
-        self.game.reset_game()
-        self.clear_entry_and_display_letters()
-        self.clear_solution_word_labels()
-        self.clear_game_status_labels()
-
-
     def clock_reached_zero(self):
-        self.display_missing_words() 
+        self.display_missing_words()
+        
+        if self.game.is_level_passed():
+            self.start_btn['state'] = NORMAL
 
 
     def display_missing_words(self):
@@ -419,6 +410,22 @@ class TextTwistUI:
         self.add_clock(game.get_clock())
         self.game.add_ui_callback(
                 "clock_reached_zero", self.clock_reached_zero)
+
+
+    def start_game(self):
+        self.start_btn['state'] = DISABLED
+        self.game.start_game()
+        self.set_display_letters(self.game.get_letters())
+        self.set_solution_word_labels(self.top_pane)
+        self.update_game_status()
+
+
+    def reset_game(self):
+        self.start_btn['state'] = NORMAL
+        self.game.reset_game()
+        self.clear_entry_and_display_letters()
+        self.clear_solution_word_labels()
+        self.clear_game_status_labels()
 
 
     def start_mainloop(self):
