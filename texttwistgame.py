@@ -79,15 +79,3 @@ class TextTwistGame:
         self.__level_passed = False
         self.reset_clock()
 
-
-def run_game_instance():
-    ui = TextTwistUI()
-    game = TextTwistGame()
-
-    ui.add_game_object_to_ui(game)
-    ui.start_mainloop()
-
-
-if __name__ == "__main__":
-    run_game_instance()
-
