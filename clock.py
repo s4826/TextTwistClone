@@ -32,15 +32,15 @@ class Clock():
         self.reset()
         self.__exit.clear()
         while True:
+            if self.__exit.is_set():
+                self.__exit.clear()
+                break
             self.__seconds -= 1
             self.set_string_var(self.__seconds)
             if self.__seconds == 0:
                 self.process_clock_reached_zero()
                 break
             sleep(1)
-            if self.__exit.is_set():
-                self.__exit.clear()
-                break
 
     def process_clock_reached_zero(self):
         for observer in self.__observers:
@@ -48,6 +48,7 @@ class Clock():
 
     def set_to_zero(self):
         self.__seconds = 0
+        self.__exit.set()
         self.set_string_var(self.__seconds)
         self.process_clock_reached_zero()
 
