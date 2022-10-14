@@ -36,6 +36,8 @@ class TextTwistGame:
             self.__score += len(word)
             if len(word) == 6:
                 self.__level_passed = True
+            if len(self.__solution_words) == len(self.__wordlist):
+                self.__clock.set_to_zero()
             return True
         else:
             return False
