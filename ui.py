@@ -231,7 +231,8 @@ class TextTwistUI:
         for i, word in enumerate(sorted(wordlist, key=len)):
             label = tk.Label(parent, font=SOLUTION_WORD_FONT,
                 text="_"*len(word), bg="white")
-            label.grid(row=(i//grid_width), column=(i%grid_width), pady=3)
+            label.grid(row=(i%grid_height), column=(i//grid_height),
+                    padx=3, pady=3)
             self.solution_labels.append(label)
 
         for i in range(grid_width):
