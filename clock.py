@@ -5,21 +5,21 @@ from time import sleep
 
 class Clock():
 
-    def __init__(self, default_time=120):
+    def __init__(self, puzzle_time=120):
         """
         Initialize a clock with a StringVar (used by tkinter),
         a default time, an observers set, and an exit event.
         """
         self.__string_var = StringVar()
-        self.__default_time = default_time
-        self.__seconds = default_time 
-        self.set_string_var(self.__seconds)
+        self.__puzzle_time = puzzle_time
+        self.__seconds = puzzle_time 
+        self._set_string_var(self.__seconds)
 
         self.__observers = set()
 
         self.__exit = Event()
 
-    def set_string_var(self, seconds):
+    def _set_string_var(self, seconds):
         """
         Set '__string_var' to the appropriate time string based
         on the argument 'seconds.'
@@ -32,7 +32,7 @@ class Clock():
         """
         return self.__string_var
 
-    def get_time(self):
+    def _get_time(self):
         """
         Get current time on the clock in seconds
         """
@@ -49,18 +49,18 @@ class Clock():
                 self.__exit.clear()
                 break
             self.__seconds -= 1
-            self.set_string_var(self.__seconds)
+            self._set_string_var(self.__seconds)
             if self.__seconds == 0:
-                self.process_clock_reached_zero()
+                self._notify_clock_reached_zero()
                 break
             sleep(1)
 
-    def process_clock_reached_zero(self):
+    def _notify_clock_reached_zero(self):
         """
         Notify all observers that the clock reached zero
         """
         for observer in self.__observers:
-            observer.notify_clock_reached_zero()
+            observer()
 
     def set_to_zero(self):
         """
@@ -68,7 +68,7 @@ class Clock():
         """
         self.__seconds = 0
         self.__exit.set()
-        self.set_string_var(self.__seconds)
+        self._set_string_var(self.__seconds)
         self.process_clock_reached_zero()
 
     def add_observer(self, observer):
@@ -83,8 +83,8 @@ class Clock():
         exit event that will cause the clock run method
         to stop.
         """
-        self.__seconds = self.__default_time 
-        self.set_string_var(self.__seconds)
+        self.__seconds = self.__puzzle_time 
+        self._set_string_var(self.__seconds)
         self.__exit.set()
 
     def __str__(self):
