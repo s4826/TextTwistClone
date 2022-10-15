@@ -3,6 +3,9 @@ from ui import TextTwistUI
 
 
 if __name__ == "__main__":
+    """
+    Main application start location
+    """
     ui = TextTwistUI()
     game = TextTwistGame()
 

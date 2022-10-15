@@ -14,11 +14,16 @@ WINDOW_WIDTH = 600
 TEXT_ENTRY_FONT = ("Times", 48)
 SOLUTION_WORD_FONT = ("Times", 24)
 SOLUTION_GRID_HEIGHT = 7
+MIN_SOLUTION_GRID_HEIGHT = 4
 GAME_STATUS_FONT = ("Times", 24)
 
 class TextTwistUI:
 
     def __init__(self):
+        """
+        Initialize tk root window and add the key bindings
+        for gameplay.
+        """
         self.root = tk.Tk()
         self.root.columnconfigure(0, weight=1)
         self.root.rowconfigure(0, weight=1)
@@ -42,16 +47,18 @@ class TextTwistUI:
 
     def create_content_pane(self, parent):
         """
-        Create the main frame that will hold all content for the UI
+        Create the main frame that will hold all content for the UI.
+        Create the top and bottom panes, which will provide logical
+        separation between 
         """
         content = tk.Frame(parent)
-        self.top_pane = tk.Frame(content, relief="groove",
-                borderwidth=2, width=WINDOW_WIDTH, height=WINDOW_HEIGHT/2)
-
-        self.bottom_pane = tk.Frame(content, relief="groove",
-                borderwidth=2, width=WINDOW_WIDTH, height=WINDOW_HEIGHT/2)
         content.grid(column=0, row=0, ipadx=5, ipady=5,
                 sticky=NSEW)
+
+        self.top_pane = tk.Frame(content, relief="groove",
+                borderwidth=2, width=WINDOW_WIDTH, height=WINDOW_HEIGHT/2)
+        self.bottom_pane = tk.Frame(content, relief="groove",
+                borderwidth=2, width=WINDOW_WIDTH, height=WINDOW_HEIGHT/2)
         self.top_pane.grid(row=0, column=0, sticky=NSEW)
         self.bottom_pane.grid(row=1, column=0, sticky=NSEW)
 
@@ -105,6 +112,9 @@ class TextTwistUI:
 
 
     def add_text_entry_frame(self, parent, width, height, padding):
+        """
+        Add the frame to hold all text entry labels.
+        """
         text_entry_frame = tk.Frame(parent, width=width, height=height)
         text_entry_frame.grid(row=0, column=0, sticky=NSEW, **padding)
 
@@ -121,7 +131,7 @@ class TextTwistUI:
             label.grid(row=0, column=i)
             self.entry_labels.append(label)
 
-        self.set_entry_label_text()
+        self.reset_entry_label_text()
 
         parent.rowconfigure(0, weight=1)
         parent.grid_propagate(False)
@@ -129,7 +139,10 @@ class TextTwistUI:
             parent.columnconfigure(i, weight=1)
 
 
-    def set_entry_label_text(self, text="_"):
+    def reset_entry_label_text(self, text="_"):
+        """
+        Reset all entry labels with default character, underscore.
+        """
         for entry_label in self.entry_labels:
             entry_label['text'] = text
 
@@ -163,6 +176,9 @@ class TextTwistUI:
 
 
     def add_game_status_frame(self, parent, width, height):
+        """
+        Add frame that will hold the level status and score labels.
+        """
         game_status_frame = tk.Frame(parent,
                 width=width, height=height)
         game_status_frame.grid(row=2, column=0, sticky=NSEW)
@@ -171,6 +187,9 @@ class TextTwistUI:
 
         
     def add_game_status_labels(self, parent):
+        """
+        Add level status and score labels to game status frame.
+        """
         self.level_status_label = tk.Label(parent,
                 font=GAME_STATUS_FONT)
         self.level_status_label.grid(row=0, column=0, sticky=NSEW)
@@ -184,6 +203,9 @@ class TextTwistUI:
 
     
     def clear_game_status_labels(self):
+        """
+        Set level status and score labels to blanks.
+        """
         self.score_label['text'] = ""
         self.level_status_label['text'] = ""
 
@@ -192,7 +214,7 @@ class TextTwistUI:
         """
         Reset the text entry and letter display areas to all blanks.
         """
-        self.set_entry_label_text() 
+        self.reset_entry_label_text() 
         self.set_display_letters()
 
 
@@ -201,7 +223,7 @@ class TextTwistUI:
         Move all letters from text entry area to display area,
         leaving text entry area blank.
         """
-        self.set_entry_label_text()
+        self.reset_entry_label_text()
         self.set_display_letters(self.game.get_letters())
 
 
@@ -217,7 +239,7 @@ class TextTwistUI:
 
     def set_solution_word_labels(self, parent):
         """
-        Populate top pane with text labels corresponding to each
+        Populate top pane with empty text labels corresponding to each
         word in the solution set.
         """
         self.clear_solution_word_labels()
@@ -275,6 +297,9 @@ class TextTwistUI:
 
     
     def add_clock(self, clock):
+        """
+        Add a clock instance to the ui.
+        """
         self.add_clock_to_frame(self.clock_frame, clock)
 
 
@@ -331,6 +356,13 @@ class TextTwistUI:
 
 
     def validate_word(self, event):
+        """
+        Validate a typed word and update the ui accordingly.
+
+        Once the word is confirmed valid, entry letters must be
+        returned to the letter display area, and the entered word
+        should be added to the solution area.
+        """
         word = "".join(label['text'] for label in self.entry_labels if
                 label['text'] != "_")
         if self.game.word_entry_is_valid(word):
@@ -340,6 +372,10 @@ class TextTwistUI:
 
 
     def add_word_to_solution_area(self, word, color="black"):
+        """
+        Populate the first empty/available solution area label
+        with 'word'
+        """
         for solution_label in self.solution_labels:
             if "_" in solution_label['text'] and \
                 len(solution_label['text']) == len(word):
@@ -349,17 +385,28 @@ class TextTwistUI:
 
 
     def update_game_status(self):
+        """
+        Update the game status frame with any score increases
+        and level status changes (i.e. level passed)
+        """
         self.update_score_label()
         self.update_level_status_label()
 
 
     def update_score_label(self):
+        """
+        Update the score in the ui from the current score value
+        in the game instance.
+        """
         score = self.game.get_score()
         self.score_label['text'] = f"Score: {score}"
 
 
     def update_level_status_label(self):
-        if self.game.is_level_passed():
+        """
+        Update level status in ui
+        """
+        if self.game.level_passed():
             self.level_status_label['text'] = "Level Passed!"
         else:
             self.level_status_label['text'] = ""
@@ -389,14 +436,23 @@ class TextTwistUI:
                 break
 
 
-    def clock_reached_zero(self):
+    def process_clock_reached_zero(self):
+        """
+        Update the ui to display all missing words when the
+        clock reaches zero.
+        """
         self.display_missing_words()
-        
-        if self.game.is_level_passed():
+       
+        # set next level available via start button
+        if self.game.level_passed():
             self.start_btn['state'] = NORMAL
 
 
     def display_missing_words(self):
+        """
+        Populate remaining solution area labels with words that
+        haven't been entered yet.
+        """
         missing_words = self.game.get_missing_solution_words()
         for word in sorted(missing_words, key=len):
             self.add_word_to_solution_area(word, color="red")
@@ -410,10 +466,14 @@ class TextTwistUI:
         self.game = game
         self.add_clock(game.get_clock())
         self.game.add_ui_callback(
-                "clock_reached_zero", self.clock_reached_zero)
+                "process_clock_reached_zero",
+                self.process_clock_reached_zero)
 
 
     def start_game(self):
+        """
+        Populate all necessary ui areas to start the game.
+        """
         self.start_btn['state'] = DISABLED
         self.game.start_game()
         self.set_display_letters(self.game.get_letters())
@@ -422,6 +482,9 @@ class TextTwistUI:
 
 
     def reset_game(self):
+        """
+        Clear all ui areas and reset game state.
+        """
         self.start_btn['state'] = NORMAL
         self.game.reset_game()
         self.clear_entry_and_display_letters()
@@ -430,12 +493,18 @@ class TextTwistUI:
 
 
     def start_mainloop(self):
+        """
+        tkinter main event loop
+        """
         self.root.mainloop()
 
 
 def set_grid_width(num_words):
+    """
+    Helper function to set width of a grid of words
+    """
     width = (num_words + SOLUTION_GRID_HEIGHT - 1) // SOLUTION_GRID_HEIGHT
-    return max(width, 4)
+    return max(width, MIN_SOLUTION_GRID_HEIGHT)
 
 
 if __name__ == '__main__':
