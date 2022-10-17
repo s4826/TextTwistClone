@@ -6,7 +6,6 @@ import random
 
 from tkinter.constants import DISABLED, NORMAL
 from string import ascii_lowercase, ascii_uppercase
-from words import *
 
 NSEW = (tk.N, tk.S, tk.E, tk.W)
 WINDOW_HEIGHT = 500
@@ -24,27 +23,33 @@ class TextTwistUI:
         Initialize tk root window and add the key bindings
         for gameplay.
         """
-        self.root = tk.Tk()
-        self.root.columnconfigure(0, weight=1)
-        self.root.rowconfigure(0, weight=1)
-        self.create_content_pane(self.root)
+        self.__root = tk.Tk()
+        self.__root.columnconfigure(0, weight=1)
+        self.__root.rowconfigure(0, weight=1)
+        self.create_content_pane(self.__root)
 
-        self.add_key_bindings_to_root_window()
+        self.add_key_bindings_to_root()
 
 
-    def add_key_bindings_to_root_window(self):
+    def add_key_bindings_to_root(self):
         """
         Bind keys for gameplay to root window.
         """
-        self.root.bind_all("<space>", self.shuffle_letters)
+        self.__root.bind_all("<space>", self.shuffle_letters)
 
         for letter in ascii_lowercase:
-            self.root.bind_all(letter, self.process_typed_letter)
+            self.__root.bind_all(letter, self.process_typed_letter)
 
-        self.root.bind_all("<BackSpace>", self.process_backspace)
-        self.root.bind_all("<Return>", self.validate_word)
+        self.__root.bind_all("<BackSpace>", self.process_backspace)
+        self.__root.bind_all("<Return>", self.validate_word)
 
-
+    
+    def remove_key_bindings_from_root(self):
+        """
+        Unbind all key bindings for the root window.
+        """
+        self.__root.unbind_all()
+    
     def create_content_pane(self, parent):
         """
         Create the main frame that will hold all content for the UI.
@@ -436,18 +441,6 @@ class TextTwistUI:
                 break
 
 
-    def process_clock_reached_zero(self):
-        """
-        Update the ui to display all missing words when the
-        clock reaches zero.
-        """
-        self.display_missing_words()
-       
-        # set next level available via start button
-        if self.game.level_passed():
-            self.start_btn['state'] = NORMAL
-
-
     def display_missing_words(self):
         """
         Populate remaining solution area labels with words that
@@ -468,6 +461,19 @@ class TextTwistUI:
         self.game.add_ui_callback(
                 "process_clock_reached_zero",
                 self.process_clock_reached_zero)
+
+
+    def process_clock_reached_zero(self):
+        """
+        Update the ui to display all missing words when the
+        clock reaches zero.
+        """
+        self.display_missing_words()
+        self.reset_entry_and_display_letters()
+       
+        # set next level available via start button
+        if self.game.level_passed():
+            self.start_btn['state'] = NORMAL
 
 
     def start_game(self):
@@ -496,7 +502,7 @@ class TextTwistUI:
         """
         tkinter main event loop
         """
-        self.root.mainloop()
+        self.__root.mainloop()
 
 
 def set_grid_width(num_words):
@@ -506,6 +512,3 @@ def set_grid_width(num_words):
     width = (num_words + SOLUTION_GRID_HEIGHT - 1) // SOLUTION_GRID_HEIGHT
     return max(width, MIN_SOLUTION_GRID_HEIGHT)
 
-
-if __name__ == '__main__':
-    pass
