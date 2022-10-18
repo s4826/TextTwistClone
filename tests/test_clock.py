@@ -36,6 +36,11 @@ class TestClock(unittest.TestCase):
 
         self.assertTrue(func.called)
 
+    def test_isub(self):
+        self.clock = Clock(10)
+        self.clock -= 1
+        self.assertEqual(self.clock._get_time(), 9)
+
     def tearDown(self):
         self.root.destroy()
 
