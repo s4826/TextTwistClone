@@ -4,7 +4,7 @@ from ui import TextTwistUI
 from clock import Clock
 from words import *
 
-GAME_TIME = 20
+GAME_TIME = 60
 
 class TextTwistGame:
 
@@ -20,7 +20,7 @@ class TextTwistGame:
         self.__wordlist = set() 
 
         self.reset_game()
-        self.__ui_callbacks = {}
+        self.ui_callbacks = {}
 
     def get_score(self):
         """
@@ -112,13 +112,14 @@ class TextTwistGame:
         """
         Notify all ui listeners that the clock reached zero.
         """
-        self.__ui_callbacks["process_clock_reached_zero"]() 
+        for function in self.ui_callbacks.values():
+            function()
 
     def add_ui_callback(self, name, func):
         """
         Add a ui function as a listener for game events.
         """
-        self.__ui_callbacks[name] = func
+        self.ui_callbacks[name] = func
 
     def start_game(self):
         """

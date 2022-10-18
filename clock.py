@@ -5,17 +5,17 @@ from time import sleep
 
 class Clock():
 
-    def __init__(self, puzzle_time=120):
+    def __init__(self, default_time=120):
         """
         Initialize a clock with a StringVar (used by tkinter),
         a default time, an observers set, and an exit event.
         """
         self.__string_var = StringVar()
-        self.__puzzle_time = puzzle_time
-        self.__seconds = puzzle_time 
+        self.__default_time = default_time
+        self.__seconds = default_time
         self._set_string_var(self.__seconds)
 
-        self.__observers = set()
+        self.observers = set()
 
         self.__exit = Event()
 
@@ -59,8 +59,8 @@ class Clock():
         """
         Notify all observers that the clock reached zero
         """
-        for observer in self.__observers:
-            observer()
+        for observer_func in self.observers:
+            observer_func()
 
     def set_to_zero(self):
         """
@@ -75,7 +75,7 @@ class Clock():
         """
         Add an observer for the clock
         """
-        self.__observers.add(observer)
+        self.observers.add(observer)
 
     def reset(self):
         """
@@ -83,7 +83,7 @@ class Clock():
         exit event that will cause the clock run method
         to stop.
         """
-        self.__seconds = self.__puzzle_time 
+        self.__seconds = self.__default_time
         self._set_string_var(self.__seconds)
         self.__exit.set()
 
