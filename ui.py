@@ -28,26 +28,22 @@ class TextTwistUI:
         self.__root.rowconfigure(0, weight=1)
         self.create_content_pane(self.__root)
 
-        self.add_key_bindings_to_root()
+        self.create_key_bindings_dictionary()
 
 
-    def add_key_bindings_to_root(self):
+    def create_key_bindings_dictionary(self):
         """
         Bind keys for gameplay to root window.
         """
         self.bindings = {}
 
-        self.__root.bind_all("<space>", self.shuffle_letters)
         self.bindings["<space>"] = self.shuffle_letters
 
         for letter in ascii_lowercase:
-            self.__root.bind_all(letter, self.process_typed_letter)
             self.bindings[letter] = self.process_typed_letter
 
-        self.__root.bind_all("<BackSpace>", self.process_backspace)
         self.bindings["<BackSpace>"] = self.process_backspace
 
-        self.__root.bind_all("<Return>", self.validate_word)
         self.bindings["<Return>"] = self.validate_word
 
     

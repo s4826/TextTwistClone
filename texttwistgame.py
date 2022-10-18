@@ -4,7 +4,7 @@ from ui import TextTwistUI
 from clock import Clock
 from words import *
 
-GAME_TIME = 120
+GAME_TIME = 20
 
 class TextTwistGame:
 
@@ -14,7 +14,7 @@ class TextTwistGame:
         and a ui callback dictionary as instance variables.
         """
         self.__clock = Clock(GAME_TIME)
-        self.__clock.add_observer(self)
+        self.__clock.add_observer(self.notify_clock_reached_zero)
 
         self.__letters = []
         self.__wordlist = set() 
