@@ -35,21 +35,34 @@ class TextTwistUI:
         """
         Bind keys for gameplay to root window.
         """
+        self.bindings = {}
+
         self.__root.bind_all("<space>", self.shuffle_letters)
+        self.bindings["<space>"] = self.shuffle_letters
 
         for letter in ascii_lowercase:
             self.__root.bind_all(letter, self.process_typed_letter)
+            self.bindings[letter] = self.process_typed_letter
 
         self.__root.bind_all("<BackSpace>", self.process_backspace)
+        self.bindings["<BackSpace>"] = self.process_backspace
+
         self.__root.bind_all("<Return>", self.validate_word)
+        self.bindings["<Return>"] = self.validate_word
 
     
-    def remove_key_bindings_from_root(self):
+    def toggle_root_key_bindings(self, action="off"):
         """
-        Unbind all key bindings for the root window.
+        Toggle all key bindings for the root window.
         """
-        self.__root.unbind_all()
-    
+        if action == "on":
+            for event, function in self.bindings.items():
+                self.__root.bind_all(event, function)
+        elif action == "off":
+            for event in self.bindings:
+                self.__root.unbind_all(event)
+
+
     def create_content_pane(self, parent):
         """
         Create the main frame that will hold all content for the UI.
@@ -470,6 +483,7 @@ class TextTwistUI:
         """
         self.display_missing_words()
         self.reset_entry_and_display_letters()
+        self.toggle_root_key_bindings("off")
        
         # set next level available via start button
         if self.game.level_passed():
@@ -481,6 +495,8 @@ class TextTwistUI:
         Populate all necessary ui areas to start the game.
         """
         self.start_btn['state'] = DISABLED
+        self.toggle_root_key_bindings("on")
+
         self.game.start_game()
         self.set_display_letters(self.game.get_letters())
         self.set_solution_word_labels(self.top_pane)
