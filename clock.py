@@ -42,13 +42,13 @@ class Clock():
         """
         Start the clock
         """
-        self.reset()
-        self.__exit.clear()
+        self.reset()            # reset clock to starting state
+        self.__exit.clear()     # clock exit event should be unset
         while True:
             if self.__exit.is_set():
                 self.__exit.clear()
                 break
-            self.__seconds -= 1
+            self -= 1
             self._set_string_var(self.__seconds)
             if self.__seconds == 0:
                 self._notify_clock_reached_zero()
@@ -69,7 +69,7 @@ class Clock():
         self.__seconds = 0
         self.__exit.set()
         self._set_string_var(self.__seconds)
-        self.process_clock_reached_zero()
+        self._notify_clock_reached_zero()
 
     def add_observer(self, observer):
         """
@@ -94,3 +94,6 @@ class Clock():
         return "{}:{}".format(self.__seconds//60,
                 (str)(self.__seconds%60).zfill(2))
 
+    def __isub__(self, arg: int):
+        self.__seconds -= arg
+        return self
