@@ -10,7 +10,7 @@ class Clock():
         Initialize a clock with a StringVar (used by tkinter),
         a default time, an observers set, and an exit event.
         """
-        self.__string_var = StringVar()
+        self.string_var = StringVar()
         self.__default_time = default_time
         self.__seconds = default_time
         self._set_string_var(self.__seconds)
@@ -21,16 +21,10 @@ class Clock():
 
     def _set_string_var(self, seconds):
         """
-        Set '__string_var' to the appropriate time string based
+        Set 'string_var' to the appropriate time string based
         on the argument 'seconds.'
         """
-        self.__string_var.set(str(self))
-
-    def get_string_var(self):
-        """
-        Return a reference to instance variable '__string_var'
-        """
-        return self.__string_var
+        self.string_var.set(str(self))
 
     def _get_time(self):
         """
@@ -70,12 +64,6 @@ class Clock():
         self.__exit.set()
         self._set_string_var(self.__seconds)
         self._notify_clock_reached_zero()
-
-    def add_observer(self, observer):
-        """
-        Add an observer for the clock
-        """
-        self.observers.add(observer)
 
     def reset(self):
         """

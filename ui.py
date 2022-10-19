@@ -69,10 +69,14 @@ class TextTwistUI:
         content.grid(column=0, row=0, ipadx=5, ipady=5,
                 sticky=NSEW)
 
-        self.top_pane = tk.Frame(content, relief="groove",
-                borderwidth=2, width=WINDOW_WIDTH, height=WINDOW_HEIGHT/2)
-        self.bottom_pane = tk.Frame(content, relief="groove",
-                borderwidth=2, width=WINDOW_WIDTH, height=WINDOW_HEIGHT/2)
+        pane_creation_kwargs = {
+            "relief": "groove",
+            "borderwidth": 2,
+            "width": WINDOW_WIDTH,
+            "height": WINDOW_HEIGHT/2
+        }
+        self.top_pane = tk.Frame(content, **pane_creation_kwargs)
+        self.bottom_pane = tk.Frame(content, **pane_creation_kwargs)
         self.top_pane.grid(row=0, column=0, sticky=NSEW)
         self.bottom_pane.grid(row=1, column=0, sticky=NSEW)
 
@@ -113,11 +117,11 @@ class TextTwistUI:
 
         padding = {"padx":5, "pady":5}
 
-        child_frame_args = (text_frame, text_frame['width'],
+        text_frame_child_args = (text_frame, text_frame['width'],
                 text_frame['height']/3)
-        self.add_text_entry_frame(*child_frame_args, padding)
-        self.add_letter_display_frame(*child_frame_args, padding)
-        self.add_game_status_frame(*child_frame_args)
+        self.add_text_entry_frame(*text_frame_child_args, padding)
+        self.add_letter_display_frame(*text_frame_child_args, padding)
+        self.add_game_status_frame(*text_frame_child_args)
 
         text_frame.rowconfigure(0, weight=1) # text entry area
         text_frame.rowconfigure(1, weight=1) # letter display area
@@ -321,7 +325,7 @@ class TextTwistUI:
         """
         Add a clock to the parent frame.
         """
-        self.clock_label = tk.Label(parent, textvariable=clock.get_string_var(),
+        self.clock_label = tk.Label(parent, textvariable=clock.string_var,
                 font=('bitstream charter', 36), anchor="center")
         self.clock_label.grid(row=0, column=0)
 
@@ -466,7 +470,7 @@ class TextTwistUI:
         and events can be processed via the TextTwistGame object.
         """
         self.game = game
-        self.add_clock(game.get_clock())
+        self.add_clock(game.clock)
         self.game.add_ui_callback(
                 "process_clock_reached_zero",
                 self.process_clock_reached_zero)

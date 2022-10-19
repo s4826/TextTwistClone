@@ -13,8 +13,8 @@ class TextTwistGame:
         Create a game instance and add a 'Clock' instance
         and a ui callback dictionary as instance variables.
         """
-        self.__clock = Clock(GAME_TIME)
-        self.__clock.add_observer(self.notify_clock_reached_zero)
+        self.clock = Clock(GAME_TIME)
+        self.clock.observers.add(self.notify_clock_reached_zero)
 
         self.__letters = []
         self.__wordlist = set() 
@@ -70,7 +70,7 @@ class TextTwistGame:
             # solution word set contains all words from wordlist
             # puzzle finished before time, set clock to zero
             if len(self.__solution_words) == len(self.__wordlist):
-                self.__clock.set_to_zero()
+                self.clock.set_to_zero()
 
             return True
         else:
@@ -89,24 +89,18 @@ class TextTwistGame:
         """
         return self.__wordlist.difference(self.__solution_words)
 
-    def get_clock(self):
-        """
-        Return the clock instance associated with this game.
-        """
-        return self.__clock
-
     def run_clock(self):
         """
         Run the game clock in its own thread.
         """
-        clock_thread = threading.Thread(target=self.__clock.run)
+        clock_thread = threading.Thread(target=self.clock.run)
         clock_thread.start()
 
     def reset_clock(self):
         """
         Reset the game clock.
         """
-        self.__clock.reset()
+        self.clock.reset()
 
     def notify_clock_reached_zero(self):
         """
