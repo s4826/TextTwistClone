@@ -13,17 +13,11 @@ class Clock():
         self.string_var = StringVar()
         self.__default_time = default_time
         self.__seconds = default_time
-        self._set_string_var(self.__seconds)
 
         self.observers = set()
 
         self.__exit = Event()
 
-    def _set_string_var(self, seconds):
-        """
-        Set 'string_var' to the appropriate time string based
-        on the argument 'seconds.'
-        """
         self.string_var.set(str(self))
 
     def _get_time(self):
@@ -43,7 +37,7 @@ class Clock():
                 self.__exit.clear()
                 break
             self -= 1
-            self._set_string_var(self.__seconds)
+            self.string_var.set(str(self))
             if self.__seconds == 0:
                 self._notify_clock_reached_zero()
                 break
@@ -62,7 +56,7 @@ class Clock():
         """
         self.__seconds = 0
         self.__exit.set()
-        self._set_string_var(self.__seconds)
+        self.string_var.set(str(self))
         self._notify_clock_reached_zero()
 
     def reset(self):
@@ -72,7 +66,7 @@ class Clock():
         to stop.
         """
         self.__seconds = self.__default_time
-        self._set_string_var(self.__seconds)
+        self.string_var.set(str(self))
         self.__exit.set()
 
     def __str__(self):
