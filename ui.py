@@ -18,10 +18,21 @@ SOLUTION_GRID_HEIGHT = 7
 MIN_SOLUTION_GRID_HEIGHT = 4
 GAME_STATUS_FONT = ("Times", 24)
 
+PUZZLE_WORD_LENGTH = 6
+
 ON = 1
 OFF = 0
 
 class TextTwistUI:
+    """
+    Main game window/ui class
+
+    Handles generation of UI components such as buttons and labels
+
+    Handles UI updates based on user input (i.e. typing letters and words),
+    and game events (i.e. correct word entered, current level passed,
+    clock stopped)
+    """
 
     def __init__(self):
         """
@@ -68,7 +79,7 @@ class TextTwistUI:
         """
         Create the main frame that will hold all content for the UI.
         Create the top and bottom panes, which will provide logical
-        separation between 
+        separation between the solution and text entry (typing) areas
         """
         content = tk.Frame(parent)
         content.grid(column=0, row=0, ipadx=5, ipady=5,
@@ -162,7 +173,7 @@ class TextTwistUI:
         Add boxes which will display characters that the user types.
         """
         self.entry_labels = []
-        for i in range(6):
+        for i in range(PUZZLE_WORD_LENGTH):
             label = tk.Label(parent, font=TEXT_ENTRY_FONT, bg="white")
             label.grid(row=0, column=i)
             self.entry_labels.append(label)

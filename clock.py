@@ -4,6 +4,11 @@ from tkinter import StringVar
 from time import sleep
 
 class Clock():
+    """
+    Class to encapsulate a text twist game clock. Provides mechanisms
+    for running the clock, resetting it, and notifying observers when
+    notable events occur (i.e. clock reaches zero)
+    """
 
     def __init__(self, default_time=120):
         """
@@ -28,11 +33,12 @@ class Clock():
 
     def run(self):
         """
-        Start the clock
+        Reset the clock to default time and start
         """
         self.reset()            # reset clock to starting state
-        self.__exit.clear()     # clock exit event should be unset
+        self.__exit.clear()     # clock exit event should be unset at start
         while True:
+            # break out of loop if exit event is set while clock is running
             if self.__exit.is_set():
                 self.__exit.clear()
                 break
@@ -77,5 +83,8 @@ class Clock():
                 (str)(self.__seconds%60).zfill(2))
 
     def __isub__(self, arg: int):
+        """
+        Magic method for decrementing clock seconds
+        """
         self.__seconds -= arg
         return self

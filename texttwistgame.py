@@ -28,6 +28,13 @@ INSTRUCTIONS = \
     """
     
 class TextTwistGame:
+    """
+    Main game class
+
+    Handles all events/variables associated with the state of a
+    Text Twist game/level, including wordlists, clock management,
+    and level completion status.
+    """
 
     def __init__(self):
         """
