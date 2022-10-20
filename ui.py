@@ -6,15 +6,20 @@ import random
 
 from tkinter.constants import DISABLED, NORMAL
 from string import ascii_lowercase, ascii_uppercase
+from texttwistgame import INSTRUCTIONS
 
 NSEW = (tk.N, tk.S, tk.E, tk.W)
 WINDOW_HEIGHT = 500
 WINDOW_WIDTH = 600
+INSTRUCTIONS_FONT = ("Times", 16)
 TEXT_ENTRY_FONT = ("Times", 48)
 SOLUTION_WORD_FONT = ("Times", 24)
 SOLUTION_GRID_HEIGHT = 7
 MIN_SOLUTION_GRID_HEIGHT = 4
 GAME_STATUS_FONT = ("Times", 24)
+
+ON = 1
+OFF = 0
 
 class TextTwistUI:
 
@@ -47,14 +52,14 @@ class TextTwistUI:
         self.bindings["<Return>"] = self.validate_word
 
     
-    def toggle_root_key_bindings(self, action="off"):
+    def toggle_root_key_bindings(self, action=OFF):
         """
         Toggle all key bindings for the root window.
         """
-        if action == "on":
+        if action == ON:
             for event, function in self.bindings.items():
                 self.__root.bind_all(event, function)
-        elif action == "off":
+        elif action == OFF:
             for event in self.bindings:
                 self.__root.unbind_all(event)
 
@@ -84,9 +89,22 @@ class TextTwistUI:
         content.rowconfigure(1, weight=1)
         content.columnconfigure(0, weight=1)
 
+        self.add_instruction_message()
         self.create_bottom_pane_frames(self.bottom_pane)
 
 
+    def add_instruction_message(self):
+        """
+        Create the instructions message that will be displayed
+        on startup and game reset.
+        """
+        self.instruction_message = tk.Message(self.top_pane,
+                text=INSTRUCTIONS, font=INSTRUCTIONS_FONT, aspect=175)
+        self.instruction_message.grid(row=0, column=0, sticky=NSEW)
+        self.top_pane.rowconfigure(0, weight=1)
+        self.top_pane.columnconfigure(0, weight=1)
+
+       
     def create_bottom_pane_frames(self, parent):
         """
         Create the two frames in the bottom pane that will hold the
@@ -260,8 +278,6 @@ class TextTwistUI:
         Populate top pane with empty text labels corresponding to each
         word in the solution set.
         """
-        self.clear_solution_word_labels()
-
         self.solution_labels = []
         wordlist = self.game.get_wordlist()
 
@@ -483,7 +499,7 @@ class TextTwistUI:
         """
         self.display_missing_words()
         self.reset_entry_and_display_letters()
-        self.toggle_root_key_bindings("off")
+        self.toggle_root_key_bindings(OFF)
        
         # set next level available via start button
         if self.game.level_passed():
@@ -495,10 +511,11 @@ class TextTwistUI:
         Populate all necessary ui areas to start the game.
         """
         self.start_btn['state'] = DISABLED
-        self.toggle_root_key_bindings("on")
+        self.toggle_root_key_bindings(ON)
 
         self.game.start_game()
         self.set_display_letters(self.game.get_letters())
+        self.clear_solution_word_labels()
         self.set_solution_word_labels(self.top_pane)
         self.update_game_status()
 
@@ -512,6 +529,8 @@ class TextTwistUI:
         self.clear_entry_and_display_letters()
         self.clear_solution_word_labels()
         self.clear_game_status_labels()
+        
+        self.add_instruction_message()
 
 
     def start_mainloop(self):

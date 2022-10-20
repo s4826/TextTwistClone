@@ -1,17 +1,37 @@
 import threading
 
-from ui import TextTwistUI
 from clock import Clock
 from words import *
 
-GAME_TIME = 60
+GAME_TIME = 120
+INSTRUCTIONS = \
+    """
+    Welcome to SeanTwist, a TextTwist clone!
 
+    Instructions:
+    Given six letters, type as many words as you can
+    in the allotted time.
+
+    Controls:
+    Use keyboard letters to type words
+    Use enter/return to submit a word
+        (if nothing happens when 'enter' is pressed, the word is not valid)
+    Use backspace to remove a letter from the current typed word
+    Use space bar to shuffle the given letters
+
+    Use the start button to start the game initially,
+        or to start the next level.
+
+    Use the reset button to completely reset the game.
+
+    Good luck!
+    """
+    
 class TextTwistGame:
 
     def __init__(self):
         """
-        Create a game instance and add a 'Clock' instance
-        and a ui callback dictionary as instance variables.
+        Create a game instance
         """
         self.clock = Clock(GAME_TIME)
         self.clock.observers.add(self.notify_clock_reached_zero)
@@ -57,7 +77,8 @@ class TextTwistGame:
         conditions, and return True. Otherwise, return False.
 
         Note: Calling this method with words that are already in
-        the current solution set will return False.
+        the current solution set (user-entered words) will
+        return False.
         """
         if word not in self.__solution_words and word in self.__wordlist:
             self.__solution_words.add(word)
