@@ -2,7 +2,9 @@ import sys
 import os
 import unittest
 import tkinter as tk
+import time
 
+from threading import Thread
 from unittest.mock import MagicMock, patch
 
 sys.path.insert(0, os.path.abspath('..'))
@@ -22,19 +24,29 @@ class TestClock(unittest.TestCase):
     def test_repr(self):
         self.assertEqual(str(self.clock), "2:00")
 
-    def test_add_observer(self):
+    def test_observer(self):
         mock = MagicMock(TextTwistGame)
 
-        self.clock.add_observer(mock.notify_clock_reached_zero)
+        self.clock.observers.add(mock.notify_clock_reached_zero)
         self.clock._notify_clock_reached_zero()
         mock.notify_clock_reached_zero.assert_called_once()
 
-    @patch.object(Clock, "_notify_clock_reached_zero")
-    def test_run_clock_to_zero(self, func):
+    def test_set_to_zero(self):
+        self.clock = Clock()
+        self.clock.set_to_zero()
+        
+        self.assertEqual(self.clock.string_var.get(), "0:00")
+
+    def test_reset(self):
         self.clock = Clock(1)
+        start_string = str(self.clock)
         self.clock.run()
 
-        self.assertTrue(func.called)
+        self.assertNotEqual(start_string, str(self.clock))
+
+        self.clock.reset()
+
+        self.assertEqual(start_string, str(self.clock))
 
     def test_isub(self):
         self.clock = Clock(10)
