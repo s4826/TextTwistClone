@@ -22,6 +22,7 @@ class Clock():
         self.observers = set()
 
         self.__exit = Event()
+        self.__reset = Event()
 
         self.string_var.set(str(self))
 
@@ -38,6 +39,11 @@ class Clock():
         self.reset()            # reset clock to starting state
         self.__exit.clear()     # clock exit event should be unset at start
         while True:
+
+            if self.__reset.is_set():
+                self.__seconds = self.__default_time
+                self.__reset.clear()
+
             # break out of loop if exit event is set while clock is running
             if self.__exit.is_set():
                 self.__exit.clear()
@@ -74,6 +80,9 @@ class Clock():
         self.__seconds = self.__default_time
         self.string_var.set(str(self))
         self.__exit.set()
+
+    def reset_while_running(self):
+        self.__reset.set()
 
     def __str__(self):
         """

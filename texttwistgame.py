@@ -121,8 +121,12 @@ class TextTwistGame:
         """
         Run the game clock in its own thread.
         """
-        clock_thread = threading.Thread(target=self.clock.run)
-        clock_thread.start()
+        clock_thread = threading.Thread(target=self.clock.run,
+                                        name="clock_thread")
+        if (threading.active_count() > 1):
+            self.clock.reset_while_running()
+        else:
+            clock_thread.start()
 
     def reset_clock(self):
         """

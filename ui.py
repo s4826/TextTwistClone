@@ -92,8 +92,8 @@ class TextTwistUI:
             "height": WINDOW_HEIGHT/2
         }
         self.top_pane = tk.Frame(content, **pane_creation_kwargs)
-        self.bottom_pane = tk.Frame(content, **pane_creation_kwargs)
         self.top_pane.grid(row=0, column=0, sticky=NSEW)
+        self.bottom_pane = tk.Frame(content, **pane_creation_kwargs)
         self.bottom_pane.grid(row=1, column=0, sticky=NSEW)
 
         content.rowconfigure(0, weight=1)
@@ -284,11 +284,12 @@ class TextTwistUI:
             self.letter_labels[i].config(text=c)
 
 
-    def set_solution_word_labels(self, parent):
+    def set_solution_word_labels(self):
         """
         Populate top pane with empty text labels corresponding to each
         word in the solution set.
         """
+        parent = self.top_pane
         self.solution_labels = []
         wordlist = self.game.get_wordlist()
 
@@ -302,10 +303,18 @@ class TextTwistUI:
                     padx=3, pady=3)
             self.solution_labels.append(label)
 
-        for i in range(grid_width):
-            parent.columnconfigure(i, weight=1)
-        for j in range(grid_height):
-            parent.rowconfigure(j, weight=1)
+        grid_dims = parent.grid_size()
+
+        for j in range(grid_dims[0]):
+            if 0 <= j < grid_width:
+                parent.columnconfigure(j, weight=1)
+            else:
+                parent.columnconfigure(j, weight=0)
+        for i in range(grid_dims[1]):
+            if 0 <= i < grid_height:
+                parent.rowconfigure(i, weight=1)
+            else:
+                parent.rowconfigure(i, weight=0)
 
 
     def clear_solution_word_labels(self):
@@ -453,6 +462,7 @@ class TextTwistUI:
         """
         if self.game.level_passed():
             self.level_status_label['text'] = "Level Passed!"
+            self.start_btn['state'] = NORMAL
         else:
             self.level_status_label['text'] = ""
         
@@ -527,7 +537,7 @@ class TextTwistUI:
         self.game.start_game()
         self.set_display_letters(self.game.get_letters())
         self.clear_solution_word_labels()
-        self.set_solution_word_labels(self.top_pane)
+        self.set_solution_word_labels()
         self.update_game_status()
 
 
