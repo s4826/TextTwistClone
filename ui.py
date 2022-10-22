@@ -536,6 +536,7 @@ class TextTwistUI:
         self.toggle_root_key_bindings(ON)
 
         self.game.start_game()
+        self.clear_entry_and_display_letters()
         self.set_display_letters(self.game.get_letters())
         self.clear_solution_word_labels()
         self.set_solution_word_labels()
