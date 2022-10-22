@@ -142,7 +142,7 @@ class TextTwistUI:
         display areas.
         """
         text_frame = tk.Frame(parent, relief="groove", borderwidth=2,
-                width=width, height=height)
+                width=width, height=height, takefocus=1)
         text_frame.grid(row=0, column=0, sticky=NSEW)
 
         padding = {"padx":5, "pady":5}
@@ -375,12 +375,10 @@ class TextTwistUI:
         'parent.'
         """
         self.start_btn = tk.Button(parent, text="Start",
-                command=self.start_game,
-                takefocus=0)
+                command=self.start_game)
         self.start_btn.grid(row=1, column=0)
         self.reset_btn = tk.Button(parent, text="Reset",
-                command=self.reset_game,
-                takefocus=0)
+                command=self.reset_game)
         self.reset_btn.grid(row=2, column=0)
 
     
