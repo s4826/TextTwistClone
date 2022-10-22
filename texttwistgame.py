@@ -22,9 +22,6 @@ class TextTwistGame:
         self.clock = Clock(GAME_TIME)
         self.clock.observers.add(self.notify_clock_reached_zero)
 
-        self.__letters = []
-        self.__wordlist = set() 
-
         self.reset_game()
         self.ui_callbacks = {}
 
@@ -34,16 +31,6 @@ class TextTwistGame:
         Get the current game score.
         """
         return self.__score
-
-
-    def level_passed(self):
-        """
-        Return the completion status of the current level.
-        """
-        if self.__level_passed:
-            return True
-        else:
-            return False
 
 
     def get_letters(self):
