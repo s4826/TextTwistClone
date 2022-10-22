@@ -28,11 +28,13 @@ class TextTwistGame:
         self.reset_game()
         self.ui_callbacks = {}
 
+
     def get_score(self):
         """
         Get the current game score.
         """
         return self.__score
+
 
     def level_passed(self):
         """
@@ -43,11 +45,13 @@ class TextTwistGame:
         else:
             return False
 
+
     def get_letters(self):
         """
         Return the current letters of the game instance.
         """
         return self.__letters
+
 
     def get_wordlist(self):
         """
@@ -55,6 +59,7 @@ class TextTwistGame:
         the current game letters.
         """
         return self.__wordlist
+
 
     def word_entry_is_valid(self, word):
         """
@@ -83,11 +88,13 @@ class TextTwistGame:
         else:
             return False
 
+
     def get_solution_words(self):
         """
         Return the current solution word set.
         """
         return self.__solution_words
+
 
     def get_missing_solution_words(self):
         """
@@ -95,6 +102,17 @@ class TextTwistGame:
         entered into the solution set yet.
         """
         return self.__wordlist.difference(self.__solution_words)
+
+
+    def level_passed(self):
+        """
+        Return the completion status of the current level.
+        """
+        if self.__level_passed:
+            return True
+        else:
+            return False
+
 
     def run_clock(self):
         """
@@ -107,11 +125,13 @@ class TextTwistGame:
         else:
             clock_thread.start()
 
+
     def reset_clock(self):
         """
         Reset the game clock.
         """
         self.clock.reset()
+
 
     def notify_clock_reached_zero(self):
         """
@@ -120,11 +140,13 @@ class TextTwistGame:
         for function in self.ui_callbacks.values():
             function()
 
+
     def add_ui_callback(self, name, func):
         """
         Add a ui function as a listener for game events.
         """
         self.ui_callbacks[name] = func
+
 
     def start_game(self):
         """
@@ -136,6 +158,7 @@ class TextTwistGame:
         self.__letters = list(get_six_letter_word())
         self.__wordlist = set(get_words_from_base_word("".join(self.__letters)))
         self.run_clock()
+
 
     def reset_game(self):
         """

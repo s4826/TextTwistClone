@@ -26,11 +26,13 @@ class Clock():
 
         self.string_var.set(str(self))
 
+
     def _get_time(self):
         """
         Get current time on the clock in seconds
         """
         return self.__seconds
+
 
     def run(self):
         """
@@ -55,12 +57,14 @@ class Clock():
                 break
             sleep(1)
 
+
     def _notify_clock_reached_zero(self):
         """
         Notify all observers that the clock reached zero
         """
         for observer_func in self.observers:
             observer_func()
+
 
     def set_to_zero(self):
         """
@@ -70,6 +74,7 @@ class Clock():
         self.__exit.set()
         self.string_var.set(str(self))
         self._notify_clock_reached_zero()
+
 
     def reset(self):
         """
@@ -81,8 +86,10 @@ class Clock():
         self.string_var.set(str(self))
         self.__exit.set()
 
+
     def reset_while_running(self):
         self.__reset.set()
+
 
     def __str__(self):
         """
@@ -90,6 +97,7 @@ class Clock():
         """
         return "{}:{}".format(self.__seconds//60,
                 (str)(self.__seconds%60).zfill(2))
+
 
     def __isub__(self, arg: int):
         """
