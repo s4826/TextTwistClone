@@ -6,7 +6,7 @@ import random
 
 from tkinter.constants import DISABLED, NORMAL
 from string import ascii_lowercase, ascii_uppercase
-from instructions import INSTRUCTIONS
+from game_instructions import INSTRUCTIONS
 
 NSEW = (tk.N, tk.S, tk.E, tk.W)
 WINDOW_HEIGHT = 500
