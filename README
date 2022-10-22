@@ -1,5 +1,9 @@
 Text Twist clone
 
+Requirements:
+python >= 3.8
+tkinter
+
 Installation instructions:
 
 Unzip the archive to the desired location

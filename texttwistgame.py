@@ -3,7 +3,6 @@ import threading
 from clock import Clock
 from words import *
 
-GAME_TIME = 120
 INSTRUCTIONS = \
     """
     Welcome to SeanTwist, a TextTwist clone!
@@ -15,7 +14,8 @@ INSTRUCTIONS = \
     Controls:
     Use keyboard letters to type words
     Use enter/return to submit a word
-        (if nothing happens when 'enter' is pressed, the word is not valid)
+        (if nothing happens when 'enter' is pressed, the word is not valid or
+            it has already been entered)
     Use backspace to remove a letter from the current typed word
     Use space bar to shuffle the given letters
 
@@ -26,7 +26,9 @@ INSTRUCTIONS = \
 
     Good luck!
     """
-    
+
+GAME_TIME = 120
+
 class TextTwistGame:
     """
     Main game class
