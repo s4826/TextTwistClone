@@ -77,11 +77,9 @@ def base_word_contains_test_word(base_word, test_word):
     """
     Check if 'base_word' contains all of the letters to make 'test_word.'
     """
-    # Method shouldn't be called with empty strings, but
-    # just in case
     if base_word == "" or test_word == "":
-        return False
-
+        raise ValueError("Arguments to method " \
+            + "'base_word_contains_test_word' cannot be empty strings")
 
     base_word = Counter(base_word)
     test_word = Counter(test_word)

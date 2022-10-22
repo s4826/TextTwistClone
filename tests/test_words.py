@@ -25,11 +25,13 @@ class TestWords(unittest.TestCase):
 
 
     def test_base_word_contains_test_word(self):
-        base_contains_test = base_word_contains_test_word
-        self.assertTrue(base_contains_test("appear", "pear"))
-        self.assertTrue(base_contains_test("crowds", "crows"))
-        self.assertFalse(base_contains_test("", "help"))
-        self.assertFalse(base_contains_test("help", ""))
+        self.assertTrue(base_word_contains_test_word("appear", "pear"))
+        self.assertTrue(base_word_contains_test_word("crowds", "crows"))
+
+        with self.assertRaises(ValueError):
+            base_word_contains_test_word("", "help")
+        with self.assertRaises(ValueError):
+            base_word_contains_test_word("help", "")
 
 if __name__ == "__main__":
     unittest.main()
