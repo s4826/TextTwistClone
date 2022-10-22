@@ -1,0 +1,14 @@
+Text Twist clone
+
+Installation instructions:
+
+Unzip the archive to the desired location
+
+No 3rd-party modules are required, but the project does require
+tkinter. Depending on your python distribution, you may not have
+tkinter installed. To check if you have tkinter installed, run
+'python -m tkinter' from the command line.
+
+Usage:
+
+Run the program by executing 'python app.py' from the command line.
