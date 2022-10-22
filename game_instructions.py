@@ -7,7 +7,7 @@ INSTRUCTIONS = \
     in the allotted time.
 
     Controls:
-    Use keyboard letters to type words
+    Use keyboard letters to type words (make sure Caps Lock is off!)
     Use enter/return to submit a word
         (if nothing happens when 'enter' is pressed, the word is not valid or
             it has already been entered)
