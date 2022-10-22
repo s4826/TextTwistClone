@@ -6,6 +6,7 @@ Word/file operations for text twist game.
 
 import random
 import sys
+import os
 
 from collections import Counter
 
@@ -13,9 +14,13 @@ MIN_WORD_LENGTH = 3
 MAX_WORD_LENGTH = 6
 
 MIN_SOLUTION_SET_SIZE = 10
-GET_SIX_LETTER_WORD_TIMEOUT = 5
 
-def get_six_letter_word(filename="wordlists/6letterwords.txt"):
+BASE_DIR = os.path.split(__file__)[0]
+WORDLIST_DIR = os.path.join(BASE_DIR, "wordlists")
+SIX_LETTER_WORD_FILE = os.path.join(WORDLIST_DIR, "6letterwords.txt")
+ALL_WORDS_FILE = os.path.join(WORDLIST_DIR, "allwords.txt")
+
+def get_six_letter_word(filename=SIX_LETTER_WORD_FILE):
     """
     Choose a random six letter word from the specified dictionary file.
     """
@@ -43,7 +48,7 @@ def get_six_letter_word(filename="wordlists/6letterwords.txt"):
 
     return base_word
 
-def get_words_from_base_word(base_word, filename="wordlists/allwords.txt"):
+def get_words_from_base_word(base_word, filename=ALL_WORDS_FILE):
     """
     Get a list of all words that can be made from the letters in the
     first argument 'base_word'. Select words from an optional dictionary
@@ -72,6 +77,12 @@ def base_word_contains_test_word(base_word, test_word):
     """
     Check if 'base_word' contains all of the letters to make 'test_word.'
     """
+    # Method shouldn't be called with empty strings, but
+    # just in case
+    if base_word == "" or test_word == "":
+        return False
+
+
     base_word = Counter(base_word)
     test_word = Counter(test_word)
 
