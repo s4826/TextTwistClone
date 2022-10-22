@@ -1,3 +1,9 @@
+"""
+words.py
+
+Word/file operations for text twist game.
+"""
+
 import random
 import sys
 
