@@ -107,6 +107,10 @@ class TextTwistGame:
         """
         clock_thread = threading.Thread(target=self.clock.run,
                                         name="clock_thread")
+
+        # If a clock thread is already running, we don't want to
+        # start another one. Simply reset (restart) the timer
+        # for the current thread.
         if (threading.active_count() > 1):
             self.clock.reset_while_running()
         else:
