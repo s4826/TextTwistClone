@@ -18,8 +18,5 @@ class TestWords(unittest.TestCase):
         self.assertFalse(is_valid_file_name(file4))
               
 
-    def test_get_six_letter_word(self):
-        pass
-
 if __name__ == "__main__":
     unittest.main()
