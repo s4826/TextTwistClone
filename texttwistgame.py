@@ -58,8 +58,8 @@ class TextTwistGame:
         the current solution set (user-entered words) will
         return False.
         """
-        if word not in self.__solution_words and word in self.__wordlist:
-            self.__solution_words.add(word)
+        if word not in self.__entered_words and word in self.__wordlist:
+            self.__entered_words.add(word)
             self.__score += len(word)
 
             # got six-letter word, level passed
@@ -68,7 +68,7 @@ class TextTwistGame:
 
             # solution word set contains all words from wordlist
             # puzzle finished before time, set clock to zero
-            if len(self.__solution_words) == len(self.__wordlist):
+            if len(self.__entered_words) == len(self.__wordlist):
                 self.clock.set_to_zero()
 
             return True
@@ -76,19 +76,12 @@ class TextTwistGame:
             return False
 
 
-    def get_solution_words(self):
-        """
-        Return the current solution word set.
-        """
-        return self.__solution_words
-
-
     def get_missing_solution_words(self):
         """
         Return the words from the wordlist that have not been
         entered into the solution set yet.
         """
-        return self.__wordlist.difference(self.__solution_words)
+        return self.__wordlist.difference(self.__entered_words)
 
 
     def level_passed(self):
@@ -145,7 +138,7 @@ class TextTwistGame:
         a level and run the clock.
         """
         self.__level_passed = False
-        self.__solution_words = set()
+        self.__entered_words = set()
         self.__letters = list(get_six_letter_word())
         self.__wordlist = set(get_words_from_base_word("".join(self.__letters)))
         self.run_clock()
@@ -158,7 +151,7 @@ class TextTwistGame:
         """
         self.__letters = []
         self.__wordlist = set()
-        self.__solution_words = set()
+        self.__entered_words = set()
         self.__score = 0
         self.__level_passed = False
         self.reset_clock()
